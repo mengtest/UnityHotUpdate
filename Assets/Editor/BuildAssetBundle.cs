@@ -8,20 +8,36 @@ using UnityEditor;
 
 public class BuildAssetBundle
 {
+    private static readonly string pathAssetBundleOut = Application.dataPath + "/../AssetBundle/";
+
+
     [MenuItem("Game/Build AssetBundles(Android)")]
     private static void BuildAssetBundlesAndroid()
     {
-        SetAssetBundleName();
-        BuildPipeline.BuildAssetBundles(Application.dataPath + "/../AssetBundle/", BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.Android);
+        BuildAssetBundles(BuildTarget.Android);
     }
 
     [MenuItem("Game/Build AssetBundles(iOS)")]
     private static void BuildAssetBundlesIos()
     {
+        BuildAssetBundles(BuildTarget.iOS);
+    }
+
+
+    private static void BuildAssetBundles(BuildTarget buildTarget)
+    {
+        CreateAssetBundleDir();
         SetAssetBundleName();
         BuildPipeline.BuildAssetBundles(Application.dataPath + "/../AssetBundle", BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
     }
 
+    private static void CreateAssetBundleDir()
+    {
+        if (!Directory.Exists(pathAssetBundleOut))
+        {
+            Directory.CreateDirectory(pathAssetBundleOut);
+        }
+    }
 
     private static void SetAssetBundleName()
     {
