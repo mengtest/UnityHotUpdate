@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class NonCacheBundle : MonoBehaviour
+public class Test : MonoBehaviour
 {
     private string BundleURL;
     private string AssetName = "Cube";

@@ -41,6 +41,7 @@ public class HotUpdate : MonoBehaviour
         {
             resInfoFile = Config.ResInfoFile;
         }
+        Config.ResInfoFile = resInfoFile;
     }
 
     IEnumerator DoUpdate()
