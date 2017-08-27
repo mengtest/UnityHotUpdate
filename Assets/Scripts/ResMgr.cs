@@ -46,8 +46,9 @@ public class ResMgr
             return res[path] as T;
         }
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
-        Debug.Log("ResMgr load in Resources path: " + path);
-        T assetObj = Resources.Load<T>(path);
+        //Debug.Log("ResMgr load in Resources path: " + path);
+        //T assetObj = Resources.Load<T>(path);
+        T assetObj = LoadAssetBundle<T>(path, cache);
 #else
         T assetObj = LoadAssetBundle<T>(path, cache);
 #endif

@@ -12,6 +12,8 @@ public class VersionInfo
     public int ver_ios_res;
     public int ver_android_lua;
     public int ver_ios_lua;
+    public int ver_win_res;
+    public int ver_win_lua;
 }
 
 
@@ -23,7 +25,8 @@ public class HotUpdate : MonoBehaviour
     void Start()
     { 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
-        SceneManager.LoadScene("Main");
+        //SceneManager.LoadScene("Main");
+        StartCoroutine(DoUpdate());
 #else
         StartCoroutine(DoUpdate());
 #endif
@@ -46,9 +49,10 @@ public class HotUpdate : MonoBehaviour
 
     IEnumerator DoUpdate()
     {
+        GetResInfoFile();
         if (!File.Exists(resInfoFile))
         {
-            Debug.LogError("resourcesinfo file not exist");
+            Debug.LogError("resourcesinfo file:" + resInfoFile + " not exist");
             yield break;
         }
 
@@ -149,9 +153,13 @@ public class HotUpdate : MonoBehaviour
         {
             return versionInfo.ver_android_res;
         }
-        else
+        else if (Config.platform == Platform.iOS)
         {
             return versionInfo.ver_ios_res;
+        }
+        else
+        {
+            return versionInfo.ver_win_res;
         }
     }
 
@@ -161,9 +169,13 @@ public class HotUpdate : MonoBehaviour
         {
             return PlayerPrefs.GetInt("ver_android_res", Config.VerInit);
         }
-        else
+        else if (Config.platform == Platform.iOS)
         {
             return PlayerPrefs.GetInt("ver_ios_res", Config.VerInit);
+        }
+        else
+        {
+            return PlayerPrefs.GetInt("ver_win_res", Config.VerInit);
         }
     }
 
@@ -173,9 +185,13 @@ public class HotUpdate : MonoBehaviour
         {
             PlayerPrefs.SetInt("ver_android_res", version);
         }
-        else
+        else if (Config.platform == Platform.iOS)
         {
             PlayerPrefs.SetInt("ver_ios_res", version);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("ver_win_res", version);
         }
     }
 

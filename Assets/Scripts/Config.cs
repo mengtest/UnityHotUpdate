@@ -4,10 +4,10 @@ using UnityEngine;
 
 
 public enum Platform
-{ 
-    None,
+{
     Android,
     iOS,
+    Win,
 }
 
 public class Config
@@ -32,11 +32,11 @@ public class Config
     public static string AssetBundleFile = AssetBundlePath + "AssetBundle";
     public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #else
-    public static Platform platform = Platform.None;
-    public static string AssetBundlePath = "";
-    public static string AssetBundleFile = "";
-    public static string HotResInfoFile = "";
+    public static Platform platform = Platform.Win;
+    public static string AssetBundlePath = "file://" + Application.persistentDataPath + "/../AssetBundle/";
+    public static string AssetBundleFile = AssetBundlePath + "AssetBundle";
+    public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #endif
 
-    public static string ApiVersion = ApiUrl + platform + "/version";
+    public static string ApiVersion = ApiUrl + "AssetBundle/" + platform + "/version";
 }
