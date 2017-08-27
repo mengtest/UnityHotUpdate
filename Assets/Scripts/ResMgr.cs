@@ -46,6 +46,7 @@ public class ResMgr
             return res[path] as T;
         }
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
+        Debug.Log("ResMgr load in Resources path: " + path);
         T assetObj = Resources.Load<T>(path);
 #else
         T assetObj = LoadAssetBundle<T>(path, cache);
@@ -107,7 +108,7 @@ public class ResMgr
     /// <param name="path"资源路径</param>
     /// <param name="cache">是否缓存</param>
     /// <returns></returns>
-    public GameObject CreateGO(string path, bool cache)
+    public GameObject CreateGO(string path, bool cache = false)
     {
         GameObject assetObj = Load<GameObject>(path, cache);
         GameObject go = GameObject.Instantiate(assetObj) as GameObject;
