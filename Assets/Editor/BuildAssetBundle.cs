@@ -28,7 +28,8 @@ public class BuildAssetBundle
     {
         CreateAssetBundlePath();
         SetAssetBundleName();
-        BuildPipeline.BuildAssetBundles(Application.dataPath + "/../AssetBundle", BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
+        AssetBundleManifest mainfest = BuildPipeline.BuildAssetBundles(Application.dataPath + "/../AssetBundle", BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
+        BuildAssetBundleAfter(mainfest);
     }
 
     private static void CreateAssetBundlePath()
@@ -43,6 +44,7 @@ public class BuildAssetBundle
     {
         string fullPath = Application.dataPath + "/Resources/";
         var relativeLen = "Assets/Resources/".Length;
+        string fileResInfo = Application.dataPath + "/Resources/resourcesinfo";
         if (Directory.Exists(fullPath))
         {
             DirectoryInfo dirInfo = new DirectoryInfo(fullPath);
@@ -50,7 +52,7 @@ public class BuildAssetBundle
             for (int i = 0; i < files.Length; i++)
             {
                 var fileInfo = files[i];
-                if (files[i].Name.EndsWith(".meta")) { continue; }
+                if (fileInfo.Name.EndsWith(".meta") || fileInfo.Name == fileResInfo) { continue; }
 
                 var basePath = fileInfo.FullName.Substring(fullPath.Length - relativeLen).Replace('\\', '/');
                 //Debug.Log("basePath: " + basePath);
@@ -67,5 +69,28 @@ public class BuildAssetBundle
         {
             Debug.LogError(fullPath + " not exists!");
         }
+    }
+
+    private static void BuildAssetBundleAfter(AssetBundleManifest mainfest)
+    {
+        string fileResInfo = Application.dataPath + "/../AssetBundle/resourcesinfo";
+        string fileResInfo2 = Application.dataPath + "/Resources/resourcesinfo";
+
+        FileStream fs = new FileStream(fileResInfo, FileMode.Create);
+        StreamWriter sw = new StreamWriter(fs);
+
+        string[] bundleNames = AssetDatabase.GetAllAssetBundleNames();
+        foreach (string bundleName in bundleNames)
+        {
+            //Debug.Log("bundleName: " + bundleName);
+            string cont = bundleName + ":" + mainfest.GetAssetBundleHash(bundleName).ToString();
+            sw.WriteLine(cont);
+        }
+
+        sw.Flush();
+        sw.Close();
+        fs.Close();
+
+        File.Copy(fileResInfo, fileResInfo2, true);
     }
 }
