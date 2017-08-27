@@ -23,6 +23,12 @@ public class BuildAssetBundle
         BuildAssetBundles(BuildTarget.iOS);
     }
 
+    [MenuItem("Game/Build AssetBundles(Win)")]
+    private static void BuildAssetBundlesWin()
+    {
+        BuildAssetBundles(BuildTarget.StandaloneWindows);
+    }
+
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {

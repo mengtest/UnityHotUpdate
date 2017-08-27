@@ -49,6 +49,9 @@ public class HotUpdate : MonoBehaviour
 
     IEnumerator DoUpdate()
     {
+        Debug.Log("AssetBundlePath: " + Config.AssetBundlePath);
+        if (!Directory.Exists(Config.AssetBundlePath)) Directory.CreateDirectory(Config.AssetBundlePath);
+        Debug.Log("AssetBundlePath: " + Config.AssetBundlePath);
         GetResInfoFile();
         if (!File.Exists(resInfoFile))
         {
@@ -81,7 +84,7 @@ public class HotUpdate : MonoBehaviour
         else
         {
             verLocal++;
-            string verInfoFile = Config.ApiUrl + Config.platform + "/v" + verLocal + "/resourcesinfo";
+            string verInfoFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/resourcesinfo";
             WWW wwwResInfo = new WWW(verInfoFile);
             yield return wwwResInfo;
             if (!string.IsNullOrEmpty(wwwResInfo.error))
@@ -95,7 +98,7 @@ public class HotUpdate : MonoBehaviour
             string[] fileLines = Regex.Split(wwwResInfo.text, "\n", RegexOptions.IgnoreCase);
             foreach (string fileLine in fileLines)
             {
-
+                if (fileLine.Trim() == "") continue;
                 string[] fileAndSign = Regex.Split(fileLine, ":", RegexOptions.IgnoreCase);
                 string file = fileAndSign[0];
 
@@ -113,7 +116,8 @@ public class HotUpdate : MonoBehaviour
                 }
                 if (needDown)
                 {
-                    string downFile = Config.ApiUrl + Config.platform + "/v" + verLocal + "/" + file;
+                    string downFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/" + file;
+                    Debug.Log("downFile: " + downFile);
                     WWW wwwDownFile = new WWW(downFile);
                     yield return wwwDownFile;
                     if (!string.IsNullOrEmpty(wwwDownFile.error))

@@ -23,17 +23,17 @@ public class Config
     public static string ResInfoFile = Application.dataPath + "/Resources/resourcesinfo";
 #if UNITY_ANDROID
     public static Platform platform = Platform.Android;
-    public static string AssetBundlePath = "jar:file://" + Application.persistentDataPath + "/../AssetBundle/";
+    public static string AssetBundlePath = "jar:file://" + Application.persistentDataPath + "/AssetBundle/";
     public static string AssetBundleFile = AssetBundlePath + "AssetBundle";
     public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #elif UNITY_IOS
     public static Platform platform = Platform.iOS;
-    public static string AssetBundlePath = Application.persistentDataPath + "/../AssetBundle/";
+    public static string AssetBundlePath = Application.persistentDataPath + "/AssetBundle/";
     public static string AssetBundleFile = AssetBundlePath + "AssetBundle";
     public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #else
     public static Platform platform = Platform.Win;
-    public static string AssetBundlePath = "file://" + Application.persistentDataPath + "/../AssetBundle/";
+    public static string AssetBundlePath = Application.persistentDataPath + "/AssetBundle/";
     public static string AssetBundleFile = AssetBundlePath + "AssetBundle";
     public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #endif
