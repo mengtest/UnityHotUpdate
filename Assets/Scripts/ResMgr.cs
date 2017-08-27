@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 
 public class ResMgr
@@ -89,8 +90,11 @@ public class ResMgr
                 string fileDepend = Config.AssetBundlePath + depends[i];
                 dependsAssetBundle[i] = AssetBundle.LoadFromFile(fileDepend);
             }
+
+            string[] paths = Regex.Split(path, "/", RegexOptions.IgnoreCase);
+            string objName = paths[paths.Length - 1];
             AssetBundle bundle = AssetBundle.LoadFromFile(path);
-            T assetObj = bundle.LoadAsset("") as T;
+            T assetObj = bundle.LoadAsset(objName) as T;
             return assetObj;
         }
 
