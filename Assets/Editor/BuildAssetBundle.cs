@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class BuildAssetBundle
 {
-    private static readonly string pathAssetBundleOut = Application.dataPath + "/../AssetBundle/";
+    private static readonly string pathAssetBundle = Application.dataPath + "/../AssetBundle/";
 
 
     [MenuItem("Game/Build AssetBundles(Android)")]
@@ -26,23 +26,23 @@ public class BuildAssetBundle
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        CreateAssetBundleDir();
+        CreateAssetBundlePath();
         SetAssetBundleName();
         BuildPipeline.BuildAssetBundles(Application.dataPath + "/../AssetBundle", BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
     }
 
-    private static void CreateAssetBundleDir()
+    private static void CreateAssetBundlePath()
     {
-        if (!Directory.Exists(pathAssetBundleOut))
+        if (!Directory.Exists(pathAssetBundle))
         {
-            Directory.CreateDirectory(pathAssetBundleOut);
+            Directory.CreateDirectory(pathAssetBundle);
         }
     }
 
     private static void SetAssetBundleName()
     {
         string fullPath = Application.dataPath + "/Resources/";
-        var relativeLen = "Assets/Resources/".Length; // Assets 长度
+        var relativeLen = "Assets/Resources/".Length;
         if (Directory.Exists(fullPath))
         {
             DirectoryInfo dirInfo = new DirectoryInfo(fullPath);
