@@ -49,9 +49,7 @@ public class HotUpdate : MonoBehaviour
 
     IEnumerator DoUpdate()
     {
-        Debug.Log("AssetBundlePath: " + Config.AssetBundlePath);
         if (!Directory.Exists(Config.AssetBundlePath)) Directory.CreateDirectory(Config.AssetBundlePath);
-        Debug.Log("AssetBundlePath: " + Config.AssetBundlePath);
         GetResInfoFile();
         if (!File.Exists(resInfoFile))
         {
