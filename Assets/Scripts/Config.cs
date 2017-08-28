@@ -38,5 +38,5 @@ public class Config
     public static string HotResInfoFile = AssetBundlePath + "resourcesinfo";
 #endif
 
-    public static string ApiVersion = ApiUrl + "AssetBundle/" + platform + "/version";
+    public static string ApiVersion = ApiUrl + "/version";
 }

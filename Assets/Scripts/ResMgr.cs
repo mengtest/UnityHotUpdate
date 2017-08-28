@@ -83,7 +83,7 @@ public class ResMgr
         AssetBundle mainfestBundle = AssetBundle.LoadFromFile(Config.AssetBundleFile);
         if (mainfestBundle != null)
         {
-            AssetBundleManifest mainfest = (AssetBundleManifest)mainfestBundle.LoadAsset("AssetBundleMainfest");
+            AssetBundleManifest mainfest = (AssetBundleManifest)mainfestBundle.LoadAsset("AssetBundleManifest");
             string[] depends = mainfest.GetAllDependencies(path);
             AssetBundle[] dependsAssetBundle = new AssetBundle[depends.Length];
 
@@ -95,6 +95,7 @@ public class ResMgr
 
             string[] paths = Regex.Split(path, "/", RegexOptions.IgnoreCase);
             string objName = paths[paths.Length - 1];
+            path = Config.AssetBundlePath + path;
             AssetBundle bundle = AssetBundle.LoadFromFile(path);
             T assetObj = bundle.LoadAsset(objName) as T;
             return assetObj;

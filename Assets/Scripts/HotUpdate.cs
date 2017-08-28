@@ -63,6 +63,7 @@ public class HotUpdate : MonoBehaviour
         yield return www;
         if (!string.IsNullOrEmpty(www.error))
         {
+            Debug.Log("Config.ApiVersion: " + Config.ApiVersion);
             Debug.LogError("request version error: " + www.error);
             yield break;
         }
@@ -71,7 +72,7 @@ public class HotUpdate : MonoBehaviour
 
         int verLocal = GetLocalVersion();
         int verServer = GetServerVersion(versionInfo);
-
+        Debug.Log("verLocal: " + verLocal + " verServer: " + verServer);
         StartCoroutine(DoUpdate(verLocal, verServer));
     }
 
@@ -130,6 +131,16 @@ public class HotUpdate : MonoBehaviour
             }
             //后续工作
             Save2LocalFile("resourcesinfo", wwwResInfo.bytes, wwwResInfo.bytes.Length);
+
+            string verABFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/AssetBundle";
+            WWW wwwAB = new WWW(verABFile);
+            yield return wwwAB;
+            if (!string.IsNullOrEmpty(wwwAB.error))
+            {
+                Debug.LogError("request " + verABFile + " error: " + wwwAB.error);
+                yield break;
+            }
+            Save2LocalFile("AssetBundle", wwwAB.bytes, wwwAB.bytes.Length);
             SetLocalVersion(verLocal);
 
             StartCoroutine(DoUpdate(verLocal, verServer));
