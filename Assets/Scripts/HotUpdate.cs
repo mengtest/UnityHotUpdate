@@ -19,9 +19,6 @@ public class VersionInfo
 
 public class HotUpdate : MonoBehaviour
 {
-    private string resInfoFile;
-
-
     void Start()
     { 
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
@@ -36,24 +33,16 @@ public class HotUpdate : MonoBehaviour
 
     private void GetResInfoFile()
     {
-        if (File.Exists(Config.HotResInfoFile))
-        {
-            resInfoFile = Config.HotResInfoFile;
-        }
-        else
-        {
-            resInfoFile = Config.ResInfoFile;
-        }
-        Config.ResInfoFile = resInfoFile;
+        Config.RealInfoFile = File.Exists(Config.HotResInfoFile) ? Config.HotResInfoFile : Config.ResInfoFile;
     }
 
     IEnumerator DoUpdate()
     {
         if (!Directory.Exists(Config.AssetBundlePath)) Directory.CreateDirectory(Config.AssetBundlePath);
         GetResInfoFile();
-        if (!File.Exists(resInfoFile))
+        if (!File.Exists(Config.RealInfoFile))
         {
-            Debug.LogError("resourcesinfo file:" + resInfoFile + " not exist");
+            Debug.LogError("resourcesinfo file:" + Config.RealInfoFile + " not exist");
             yield break;
         }
 
@@ -141,14 +130,15 @@ public class HotUpdate : MonoBehaviour
             Save2LocalFile("AssetBundle", wwwAB.bytes, wwwAB.bytes.Length);
             SetLocalVersion(verLocal);
 
+            Config.RealInfoFile = Config.HotResInfoFile;
             StartCoroutine(DoUpdate(verLocal, verServer));
         }
     }
 
     private Dictionary<string, string> mLocalResInfoSing = new Dictionary<string, string>();
     private void DoLocalResInfoSign()
-    { 
-        using(FileStream fs = new FileStream(resInfoFile, FileMode.Open, FileAccess.Read))
+    {
+        using (FileStream fs = new FileStream(Config.RealInfoFile, FileMode.Open, FileAccess.Read))
         using (StreamReader sr = new StreamReader(fs))
         {
             string line;

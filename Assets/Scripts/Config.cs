@@ -20,6 +20,7 @@ public class Config
     public static int VerAndroidLua = 1;
     public static int VerIosLua = 1;
 
+    public static string RealInfoFile = "";
     public static string ResInfoFile = Application.dataPath + "/Resources/resourcesinfo";
 #if UNITY_ANDROID
     public static Platform platform = Platform.Android;
