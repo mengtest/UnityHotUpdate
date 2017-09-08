@@ -20,7 +20,7 @@ public class VersionInfo
 public class HotUpdate : MonoBehaviour
 {
     void Start()
-    { 
+    {
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
         //SceneManager.LoadScene("Main");
         StartCoroutine(DoUpdate());
