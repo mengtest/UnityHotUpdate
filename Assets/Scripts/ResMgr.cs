@@ -5,27 +5,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 
-public class ResMgr
+public class ResMgr : Singleton<ResMgr>
 {
-    private static ResMgr mInst;
-    public static ResMgr Inst
-    {
-        get
-        {
-            if (mInst == null)
-            {
-                mInst = new ResMgr();
-            }
-
-            return mInst;
-        }
-    }
-
-
     /// <summary> 资源缓存容器 </summary>
     private Hashtable res;
     private Dictionary<string, AssetBundle> mAssetBundles;
-    private ResMgr()
+    public ResMgr()
     {
         res = new Hashtable();
         mAssetBundles = new Dictionary<string, AssetBundle>();
