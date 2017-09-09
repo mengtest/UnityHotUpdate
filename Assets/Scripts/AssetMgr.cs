@@ -17,7 +17,7 @@ public class AssetMgr : Singleton<AssetMgr>
     public AssetMgr()
     {
         AssetBundle _bundleMani = AssetBundle.LoadFromFile(Config.AssetBundleFile);
-        if (_bundleManifest != null)
+        if (_bundleMani != null)
         {
             _bundleManifest = _bundleMani.LoadAsset<AssetBundleManifest>(_manifestName);
             if (_bundleManifest == null)
@@ -53,20 +53,20 @@ public class AssetMgr : Singleton<AssetMgr>
     	return bundle;
     }
 
-    public T Load<T>(string path) where T : UnityEngine.Object
+    public T Load<T>(string bundleName) where T : UnityEngine.Object
     {
         if (_bundleManifest != null)
         {
-            AssetBundle bundle = LoadBundle(Config.AssetBundlePath + path);
+            AssetBundle bundle = LoadBundle(bundleName);
 
             if (bundle != null)
             {
-                string objName = Path2Objname(path);
+                string objName = Path2Objname(bundleName);
                 return bundle.LoadAsset<T>(objName);
             }
             else
             {
-                Debug.LogError("AssetBundle加载失败 path: " + path);
+                Debug.LogError("AssetBundle加载失败 bundleName: " + bundleName);
             }
         }
 
