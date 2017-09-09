@@ -12,7 +12,7 @@ public enum Platform
 
 public class Config
 {
-    public static string ApiUrl = "http://192.168.0.103:81/";
+    public static string ApiUrl = "http://192.168.0.102:81/";
 
     public static int VerInit = 1;
     public static int VerAndroidRes = 1;
