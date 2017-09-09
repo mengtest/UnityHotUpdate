@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 3421773858
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: b/bb/sphere
+      Dependencies: {}
+    Info_1:
+      Name: b/capsule
+      Dependencies: {}
+    Info_2:
+      Name: a/cube
+      Dependencies: {}
+    Info_3:
+      Name: cylinder
+      Dependencies: {}

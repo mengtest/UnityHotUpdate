@@ -33,6 +33,3 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-
-/AssetBundle/
-/wwwroot/
