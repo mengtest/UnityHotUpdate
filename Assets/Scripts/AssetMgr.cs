@@ -58,7 +58,6 @@ public class AssetMgr : Singleton<AssetMgr>
         if (_bundleManifest != null)
         {
             AssetBundle bundle = LoadBundle(bundleName);
-
             if (bundle != null)
             {
                 string objName = Path2Objname(bundleName);
