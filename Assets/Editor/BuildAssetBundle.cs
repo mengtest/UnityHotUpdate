@@ -8,7 +8,7 @@ using UnityEditor;
 
 public class BuildAssetBundle
 {
-    private static string _pathAssetBundle = Application.dataPath + "/../AssetBundle/";
+    private static string _pathAssetBundle = Application.dataPath + "/../hotroot/";
     private static string _pathWwwRoot = Application.dataPath + "/../wwwroot/";
     private static string _verInfoFile = _pathWwwRoot + "version";
     private static readonly VersionInfo _versionInfo = new VersionInfo();
@@ -44,7 +44,7 @@ public class BuildAssetBundle
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        _pathPlatVerAB = _pathAssetBundle + _platform + "/v" + _ver + "/";
+        _pathPlatVerAB = _pathAssetBundle + _platform + "/res/v" + _ver + "/";
 
         ClearAssetBundleNames();
         CreateAssetBundlePath();
@@ -125,7 +125,7 @@ public class BuildAssetBundle
         }
 
         int verLast = _ver - 1;
-        string pathPlatVerABLast = _pathAssetBundle + _platform + "/v" + verLast + "/";
+        string pathPlatVerABLast = _pathAssetBundle + _platform + "/res/v" + verLast + "/";
         string zipPath = _pathWwwRoot + _platform + "/res/";
         string zipFile = zipPath + "r" + _ver + ".zip";
 
