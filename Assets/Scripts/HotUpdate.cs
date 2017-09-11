@@ -14,13 +14,16 @@ public class VersionInfo
     public int ver_android_lua = 1;
     public int ver_ios_lua = 1;
 
-    public int ver_win_res = 2;
+    public int ver_win_res = 3;
     public int ver_win_lua = 1;
 }
 
 
 public class HotUpdate : MonoBehaviour
 {
+    private VersionInfo _verInfo = new VersionInfo();
+
+
     void Start()
     {
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
@@ -117,15 +120,15 @@ public class HotUpdate : MonoBehaviour
     {
         if (Config.platform == Platform.Android)
         {
-            return PlayerPrefs.GetInt("ver_android_res", Config.VerInit);
+            return PlayerPrefs.GetInt("ver_android_res", _verInfo.ver_android_res);
         }
         else if (Config.platform == Platform.iOS)
         {
-            return PlayerPrefs.GetInt("ver_ios_res", Config.VerInit);
+            return PlayerPrefs.GetInt("ver_ios_res", _verInfo.ver_ios_res);
         }
         else
         {
-            return PlayerPrefs.GetInt("ver_win_res", Config.VerInit);
+            return PlayerPrefs.GetInt("ver_win_res", _verInfo.ver_win_res);
         }
     }
 
@@ -143,28 +146,5 @@ public class HotUpdate : MonoBehaviour
         {
             PlayerPrefs.SetInt("ver_win_res", version);
         }
-    }
-
-    private void Save2LocalFile(string file, byte[] data, int dataLen)
-    {
-        string[] filePaths = Regex.Split(file, "/", RegexOptions.IgnoreCase);
-        if (filePaths.Length > 1)
-        {
-            string[] filePathsTmp = new string[filePaths.Length - 1];
-            System.Array.Copy(filePaths, 0, filePathsTmp, 0, filePaths.Length - 1);
-            string filePath = string.Join("/", filePathsTmp);
-            filePath = Config.AssetBundlePath + filePath;
-            if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
-        }
-
-        file = Config.AssetBundlePath + file;
-
-        FileInfo fileInfo = new FileInfo(file);
-        if (fileInfo.Exists) fileInfo.Delete();
-
-        Stream sw = fileInfo.Create();
-        sw.Write(data, 0, dataLen);
-        sw.Flush();
-        sw.Close();
     }
 }
