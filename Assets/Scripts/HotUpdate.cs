@@ -8,12 +8,14 @@ using UnityEngine.SceneManagement;
 
 public class VersionInfo
 {
-    public int ver_android_res;
-    public int ver_ios_res;
-    public int ver_android_lua;
-    public int ver_ios_lua;
-    public int ver_win_res;
-    public int ver_win_lua;
+    public int ver_android_res = 1;
+    public int ver_ios_res = 1;
+
+    public int ver_android_lua = 1;
+    public int ver_ios_lua = 1;
+
+    public int ver_win_res = 2;
+    public int ver_win_lua = 1;
 }
 
 
@@ -72,81 +74,26 @@ public class HotUpdate : MonoBehaviour
         else
         {
             verLocal++;
-            string verInfoFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/resourcesinfo";
-            WWW wwwResInfo = new WWW(verInfoFile);
-            yield return wwwResInfo;
-            if (!string.IsNullOrEmpty(wwwResInfo.error))
+            string resFile = Config.ApiUrl + Config.platform + "/res/r" + verLocal + ".zip";
+
+            WWW wwwRes = new WWW(resFile);
+            yield return wwwRes;
+            if (!string.IsNullOrEmpty(wwwRes.error))
             {
-                Debug.LogError("request " + verInfoFile + " error: " + wwwResInfo.error);
+                Debug.LogError("request " + resFile + " error: " + wwwRes.error);
                 yield break;
             }
 
-            DoLocalResInfoSign();
+            string localResFile = Config.AssetBundlePath + "res.zip";
+            File.WriteAllBytes(localResFile, wwwRes.bytes);
 
-            string[] fileLines = Regex.Split(wwwResInfo.text, "\n", RegexOptions.IgnoreCase);
-            foreach (string fileLine in fileLines)
-            {
-                if (fileLine.Trim() == "") continue;
-                string[] fileAndSign = Regex.Split(fileLine, ":", RegexOptions.IgnoreCase);
-                string file = fileAndSign[0];
+            UtilZip.UnZip(localResFile, Config.AssetBundlePath);
+            File.Delete(localResFile);
 
-                bool needDown = false;
-
-                if (mLocalResInfoSing.ContainsKey(file))
-                {
-                    string oldSign = mLocalResInfoSing[file];
-                    string newSign = fileAndSign[1];
-                    needDown = (oldSign == newSign) ? true : false;
-                }
-                else
-                {
-                    needDown = true;
-                }
-                if (needDown)
-                {
-                    string downFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/" + file;
-                    Debug.Log("downFile: " + downFile);
-                    WWW wwwDownFile = new WWW(downFile);
-                    yield return wwwDownFile;
-                    if (!string.IsNullOrEmpty(wwwDownFile.error))
-                    {
-                        Debug.LogError("request " + downFile + " error: " + wwwDownFile.error);
-                        yield break;
-                    }
-                    Save2LocalFile(file, wwwDownFile.bytes, wwwDownFile.bytes.Length);
-                }
-            }
-            //后续工作
-            Save2LocalFile("resourcesinfo", wwwResInfo.bytes, wwwResInfo.bytes.Length);
-
-            string verABFile = Config.ApiUrl + "AssetBundle/" + Config.platform + "/v" + verLocal + "/AssetBundle";
-            WWW wwwAB = new WWW(verABFile);
-            yield return wwwAB;
-            if (!string.IsNullOrEmpty(wwwAB.error))
-            {
-                Debug.LogError("request " + verABFile + " error: " + wwwAB.error);
-                yield break;
-            }
-            Save2LocalFile("AssetBundle", wwwAB.bytes, wwwAB.bytes.Length);
             SetLocalVersion(verLocal);
 
             Config.RealInfoFile = Config.HotResInfoFile;
             StartCoroutine(DoUpdate(verLocal, verServer));
-        }
-    }
-
-    private Dictionary<string, string> mLocalResInfoSing = new Dictionary<string, string>();
-    private void DoLocalResInfoSign()
-    {
-        using (FileStream fs = new FileStream(Config.RealInfoFile, FileMode.Open, FileAccess.Read))
-        using (StreamReader sr = new StreamReader(fs))
-        {
-            string line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                string[] fileAndSign = Regex.Split(line, ":", RegexOptions.IgnoreCase);
-                mLocalResInfoSing.Add(fileAndSign[0], fileAndSign[1]);
-            }
         }
     }
 

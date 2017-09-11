@@ -29,6 +29,7 @@ public class ResMgr : Singleton<ResMgr>
         }
         else
         {
+            Debug.Log("Load from AssetBundle");
             obj = AssetMgr.Inst.Load<T>(path);
         }
 
