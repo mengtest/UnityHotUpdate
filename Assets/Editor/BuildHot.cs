@@ -128,7 +128,6 @@ public class BuildHot
     private static void BuildAssetBundleAfter(AssetBundleManifest mainfest)
     {
         string fileResInfo = _pathPlatVerAB + "resourcesinfo";
-        string fileResInfo2 = Application.dataPath + "/Resources/resourcesinfo";
 
         using (FileStream fs = new FileStream(fileResInfo, FileMode.Create))
         {
@@ -143,7 +142,6 @@ public class BuildHot
                 }
             }
         }
-        File.Copy(fileResInfo, fileResInfo2, true);
     }
 
     private static void ZipRes()
