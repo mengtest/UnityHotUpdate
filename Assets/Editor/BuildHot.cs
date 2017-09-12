@@ -157,7 +157,6 @@ public class BuildHot
 
         Dictionary<string, string> dictZipFile = new Dictionary<string, string>();
         dictZipFile.Add(_pathPlatVerAB + "v" + _ver, "AssetBundle");
-        dictZipFile.Add(_pathPlatVerAB + "resourcesinfo", "resourcesinfo");
         foreach (string diffFile in listResInfoDiff)
         {
             string diffFile2 = _pathPlatVerAB + diffFile;
