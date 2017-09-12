@@ -6,18 +6,20 @@ using UnityEngine;
 using UnityEditor;
 
 
-public class BuildAssetBundle
+public class BuildHot
 {
-    private static string _pathAssetBundle = Application.dataPath + "/../hotroot/";
+    private static string _pathHotRoot = Application.dataPath + "/../hotroot/";
     private static string _pathWwwRoot = Application.dataPath + "/../wwwroot/";
     private static string _verInfoFile = _pathWwwRoot + "version";
+
     private static readonly VersionInfo _versionInfo = new VersionInfo();
+
     private static string _platform;
     private static int _ver;
     private static string _pathPlatVerAB;
 
 
-    [MenuItem("Game/Build AssetBundles(Android)")]
+    [MenuItem("Game/AssetBundle/Build(Android)")]
     private static void BuildAssetBundlesAndroid()
     {
         _platform = "Android";
@@ -25,7 +27,7 @@ public class BuildAssetBundle
         BuildAssetBundles(BuildTarget.Android);
     }
 
-    [MenuItem("Game/Build AssetBundles(iOS)")]
+    [MenuItem("Game/AssetBundle/Build(iOS)")]
     private static void BuildAssetBundlesIos()
     {
         _platform = "iOS";
@@ -33,7 +35,7 @@ public class BuildAssetBundle
         BuildAssetBundles(BuildTarget.iOS);
     }
 
-    [MenuItem("Game/Build AssetBundles(Win)")]
+    [MenuItem("Game/AssetBundle/Build(Win)")]
     private static void BuildAssetBundlesWin()
     {
         _platform = "Win";
@@ -41,26 +43,55 @@ public class BuildAssetBundle
         BuildAssetBundles(BuildTarget.StandaloneWindows);
     }
 
+    [MenuItem("Game/AssetBundle/Update(Android)")]
+    private static void UpdateAssetBundlesAndroid()
+    {
+        _platform = "Android";
+        _ver = _versionInfo.ver_android_res;
+        UpdateAssetBundles();
+    }
+
+    [MenuItem("Game/AssetBundle/Update(iOS)")]
+    private static void UpdateAssetBundlesIos()
+    {
+        _platform = "iOS";
+        _ver = _versionInfo.ver_ios_res;
+        UpdateAssetBundles();
+    }
+
+    [MenuItem("Game/AssetBundle/Update(Win)")]
+    private static void UpdateAssetBundlesWin()
+    {
+        _platform = "Win";
+        _ver = _versionInfo.ver_win_res;
+        UpdateAssetBundles();
+    }
+
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        _pathPlatVerAB = _pathAssetBundle + _platform + "/res/v" + _ver + "/";
+        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _ver + "/";
+        CreatePath(_pathPlatVerAB);
 
         ClearAssetBundleNames();
-        CreateAssetBundlePath();
         SetAssetBundleName();
-        AssetBundleManifest mainfest = BuildPipeline.BuildAssetBundles(_pathPlatVerAB, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.iOS);
+        AssetBundleManifest mainfest = BuildPipeline.BuildAssetBundles(_pathPlatVerAB, BuildAssetBundleOptions.UncompressedAssetBundle, buildTarget);
         BuildAssetBundleAfter(mainfest);
-        CheckDiffFile();
-        SetVerInfo();
     }
 
-    private static void CreateAssetBundlePath()
+    private static void UpdateAssetBundles()
     {
-        if (!Directory.Exists(_pathPlatVerAB))
-        {
-            Directory.CreateDirectory(_pathPlatVerAB);
-        }
+        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _ver + "/";
+        CreatePath(_pathWwwRoot);
+
+        ZipRes();
+        WriteVerInfo();
+    }
+
+
+    private static void CreatePath(string path)
+    {
+        if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
     }
 
     private static void SetAssetBundleName()
@@ -99,37 +130,32 @@ public class BuildAssetBundle
         string fileResInfo = _pathPlatVerAB + "resourcesinfo";
         string fileResInfo2 = Application.dataPath + "/Resources/resourcesinfo";
 
-        FileStream fs = new FileStream(fileResInfo, FileMode.Create);
-        StreamWriter sw = new StreamWriter(fs);
-
-        string[] bundleNames = AssetDatabase.GetAllAssetBundleNames();
-        foreach (string bundleName in bundleNames)
+        using (FileStream fs = new FileStream(fileResInfo, FileMode.Create))
         {
-            //Debug.Log("bundleName: " + bundleName);
-            string cont = bundleName + ":" + mainfest.GetAssetBundleHash(bundleName).ToString();
-            sw.WriteLine(cont);
+            using (StreamWriter sw = new StreamWriter(fs))
+            {
+                string[] bundleNames = AssetDatabase.GetAllAssetBundleNames();
+                foreach (string bundleName in bundleNames)
+                {
+                    //Debug.Log("bundleName: " + bundleName);
+                    string cont = bundleName + ":" + mainfest.GetAssetBundleHash(bundleName).ToString();
+                    sw.WriteLine(cont);
+                }
+            }
         }
-
-        sw.Flush();
-        sw.Close();
-        fs.Close();
-
         File.Copy(fileResInfo, fileResInfo2, true);
     }
 
-    private static void CheckDiffFile()
+    private static void ZipRes()
     {
-        if (_ver <= 1)
-        {
-            return;
-        }
+        if (_ver <= 1) { return; }
 
         int verLast = _ver - 1;
-        string pathPlatVerABLast = _pathAssetBundle + _platform + "/res/v" + verLast + "/";
+        string pathPlatVerABLast = _pathHotRoot + _platform + "/res/v" + verLast + "/";
         string zipPath = _pathWwwRoot + _platform + "/res/";
         string zipFile = zipPath + "r" + _ver + ".zip";
 
-        List<string> listResInfoDiff = GetResInfoDiff(_pathPlatVerAB + "resourcesinfo", pathPlatVerABLast + "resourcesinfo");
+        List<string> listResInfoDiff = GetFileInfoDiff(_pathPlatVerAB + "resourcesinfo", pathPlatVerABLast + "resourcesinfo");
 
         Dictionary<string, string> dictZipFile = new Dictionary<string, string>();
         dictZipFile.Add(_pathPlatVerAB + "v" + _ver, "AssetBundle");
@@ -147,57 +173,51 @@ public class BuildAssetBundle
         UtilZip.Zip(dictZipFile, zipFile);
     }
 
-    private static List<string> GetResInfoDiff(string resInfo, string resInfoLast)
+    private static List<string> GetFileInfoDiff(string fileInfo, string fileInfoLast)
     {
-        Dictionary<string, string> dictResInfo = GetResInfoDict(resInfo);
-        Dictionary<string, string> dictResInfoLast = GetResInfoDict(resInfoLast);
+        Dictionary<string, string> dictFileInfo = GetFileInfoDict(fileInfo);
+        Dictionary<string, string> dictFileInfoLast = GetFileInfoDict(fileInfoLast);
 
-        List<string> listResInfoDiff = new List<string>();
-        foreach (var kv in dictResInfo)
+        List<string> listFileInfoDiff = new List<string>();
+        foreach (var kv in dictFileInfo)
         {
             string k = kv.Key;
             string v = kv.Value;
-            if (!dictResInfoLast.ContainsKey(k) || dictResInfoLast[k] != v)
+            if (!dictFileInfoLast.ContainsKey(k) || dictFileInfoLast[k] != v)
             {
-                listResInfoDiff.Add(k);
+                listFileInfoDiff.Add(k);
             }
         }
-        return listResInfoDiff;
+        return listFileInfoDiff;
     }
 
-    private static Dictionary<string, string> GetResInfoDict(string file)
+    private static Dictionary<string, string> GetFileInfoDict(string file)
     {
-        Dictionary<string, string> dictResInfo = new Dictionary<string, string>();
+        Dictionary<string, string> dictFileInfo = new Dictionary<string, string>();
 
         using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-        using (StreamReader sr = new StreamReader(fs))
         {
-            string line;
-            while ((line = sr.ReadLine()) != null)
+            using (StreamReader sr = new StreamReader(fs))
             {
-                string[] fileAndSign = Regex.Split(line, ":", RegexOptions.IgnoreCase);
-                dictResInfo.Add(fileAndSign[0], fileAndSign[1]);
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] fileAndSign = Regex.Split(line, ":", RegexOptions.IgnoreCase);
+                    dictFileInfo.Add(fileAndSign[0], fileAndSign[1]);
+                }
             }
         }
-        return dictResInfo;
+        return dictFileInfo;
     }
 
-    private static void SetVerInfo()
+    private static void WriteVerInfo()
     {
-        string verStr = JsonUtility.ToJson(_versionInfo);
-        File.WriteAllBytes(_verInfoFile, System.Text.Encoding.Default.GetBytes(verStr));
+        string verInfoStr = JsonUtility.ToJson(_versionInfo);
+        File.WriteAllBytes(_verInfoFile, System.Text.Encoding.Default.GetBytes(verInfoStr));
     }
 
     private static void ClearAssetBundleNames()
     {
-        /*
-        int length = AssetDatabase.GetAllAssetBundleNames().Length;
-        string[] oldAssetBundleNames = new string[length];
-        for (int i = 0; i < length; i++)
-        {
-            oldAssetBundleNames[i] = AssetDatabase.GetAllAssetBundleNames()[i];
-        }
-         * */
         foreach (string bundleName in AssetDatabase.GetAllAssetBundleNames())
         {
             AssetDatabase.RemoveAssetBundleName(bundleName, true);

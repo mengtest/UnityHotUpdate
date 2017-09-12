@@ -1,5 +1,6 @@
 AssetBundle：
-	选择打包平台生成对应版本的的asset bundle，如AssetBundle/Android/v2/
-	用当前版本的打包文件信息和上个版本做对比，找出需要更新的文件(AssetBundle文件和resourcesinfo必须更新)
-	把需要更新的文件打包压缩成一个更新文件，放到web相应的目录
-	写入新版本停放到web目录
+	打包对应平台的AssetBundle
+	查找与上一个版本有差异的文件并打包成zip放到web目录(当前版本AssetBundle文件和resourcesinfo必须打包)
+	写入版本信息存到web目录
+	发布当前版本的包
+	增加版本号

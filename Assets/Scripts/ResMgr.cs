@@ -22,7 +22,7 @@ public class ResMgr : Singleton<ResMgr>
 
         T obj = null;
 
-        string loadFile = Config.AssetBundlePath + path;
+        string loadFile = Config.ResPath + path;
         if (!File.Exists(loadFile))
         {
             obj = Resources.Load<T>(path);

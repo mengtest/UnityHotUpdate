@@ -9,7 +9,7 @@ public class AssetMgr : Singleton<AssetMgr>
 {
     //private string _bundleExtension = ".unity";
     private string _manifestName = "AssetBundleManifest";
-    private string _bundleDirPath = Config.AssetBundlePath;
+    private string _bundleDirPath = Config.ResPath;
     AssetBundleManifest _bundleManifest = null;
     private Dictionary<string, AssetBundle> _bundleDict = new Dictionary<string, AssetBundle>();
 

@@ -6,48 +6,40 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-public class VersionInfo
-{
-    public int ver_android_res = 1;
-    public int ver_ios_res = 1;
-
-    public int ver_android_lua = 1;
-    public int ver_ios_lua = 1;
-
-    public int ver_win_res = 3;
-    public int ver_win_lua = 1;
-}
-
-
 public class HotUpdate : MonoBehaviour
 {
     private VersionInfo _verInfo = new VersionInfo();
+    private int _taskUpdateNum = 0;
 
 
     void Start()
     {
+        _taskUpdateNum = Config.TaskUpdateNum;
+
+        Config.RealResInfoFile = File.Exists(Config.HotResInfoFile) ? Config.HotResInfoFile : Config.ResInfoFile;
+        if (!Directory.Exists(Config.ResPath)) Directory.CreateDirectory(Config.ResPath);
+
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
-        //SceneManager.LoadScene("Main");
-        StartCoroutine(DoUpdate());
+        SceneManager.LoadScene("Main");
 #else
-        StartCoroutine(DoUpdate());
+        StartCoroutine(DoResUpdate());
 #endif
     }
 
-
-
-    private void GetResInfoFile()
+    void Update()
     {
-        Config.RealInfoFile = File.Exists(Config.HotResInfoFile) ? Config.HotResInfoFile : Config.ResInfoFile;
+        if (_taskUpdateNum <= 0)
+        {
+            SceneManager.LoadScene("Main");
+        }
     }
 
-    IEnumerator DoUpdate()
+
+    IEnumerator DoResUpdate()
     {
-        if (!Directory.Exists(Config.AssetBundlePath)) Directory.CreateDirectory(Config.AssetBundlePath);
-        GetResInfoFile();
-        if (!File.Exists(Config.RealInfoFile))
+        if (!File.Exists(Config.RealResInfoFile))
         {
-            Debug.LogError("resourcesinfo file:" + Config.RealInfoFile + " not exist");
+            Debug.LogError("resourcesinfo file:" + Config.RealResInfoFile + " not exist");
             yield break;
         }
 
@@ -62,17 +54,17 @@ public class HotUpdate : MonoBehaviour
 
         VersionInfo versionInfo = JsonUtility.FromJson<VersionInfo>(www.text);
 
-        int verLocal = GetLocalVersion();
-        int verServer = GetServerVersion(versionInfo);
-        Debug.Log("verLocal: " + verLocal + " verServer: " + verServer);
-        StartCoroutine(DoUpdate(verLocal, verServer));
+        int verResLocal = GetLocalResVersion();
+        int verResServer = GetServerResVersion(versionInfo);
+        Debug.Log("verResLocal: " + verResLocal + " verResServer: " + verResServer);
+        StartCoroutine(DoResUpdate(verResLocal, verResServer));
     }
 
-    IEnumerator DoUpdate(int verLocal, int verServer)
+    IEnumerator DoResUpdate(int verLocal, int verServer)
     {
         if (verLocal >= verServer)
         {
-            SceneManager.LoadScene("Main");
+            _taskUpdateNum--;
         }
         else
         {
@@ -87,20 +79,20 @@ public class HotUpdate : MonoBehaviour
                 yield break;
             }
 
-            string localResFile = Config.AssetBundlePath + "res.zip";
+            string localResFile = Config.ResPath + "res.zip";
             File.WriteAllBytes(localResFile, wwwRes.bytes);
 
-            UtilZip.UnZip(localResFile, Config.AssetBundlePath);
+            UtilZip.UnZip(localResFile, Config.ResPath);
             File.Delete(localResFile);
 
-            SetLocalVersion(verLocal);
+            SetLocalResVersion(verLocal);
 
-            Config.RealInfoFile = Config.HotResInfoFile;
-            StartCoroutine(DoUpdate(verLocal, verServer));
+            Config.RealResInfoFile = Config.HotResInfoFile;
+            StartCoroutine(DoResUpdate(verLocal, verServer));
         }
     }
 
-    private int GetServerVersion(VersionInfo versionInfo)
+    private int GetServerResVersion(VersionInfo versionInfo)
     {
         if (Config.platform == Platform.Android)
         {
@@ -116,35 +108,24 @@ public class HotUpdate : MonoBehaviour
         }
     }
 
-    private int GetLocalVersion()
+    private int GetLocalResVersion()
     {
         if (Config.platform == Platform.Android)
         {
-            return PlayerPrefs.GetInt("ver_android_res", _verInfo.ver_android_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_android_res);
         }
         else if (Config.platform == Platform.iOS)
         {
-            return PlayerPrefs.GetInt("ver_ios_res", _verInfo.ver_ios_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_ios_res);
         }
         else
         {
-            return PlayerPrefs.GetInt("ver_win_res", _verInfo.ver_win_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_win_res);
         }
     }
 
-    private void SetLocalVersion(int version)
+    private void SetLocalResVersion(int ver)
     {
-        if (Config.platform == Platform.Android)
-        {
-            PlayerPrefs.SetInt("ver_android_res", version);
-        }
-        else if (Config.platform == Platform.iOS)
-        {
-            PlayerPrefs.SetInt("ver_ios_res", version);
-        }
-        else
-        {
-            PlayerPrefs.SetInt("ver_win_res", version);
-        }
+        PlayerPrefs.SetInt(Config.VerKeyRes, ver);
     }
 }
