@@ -96,12 +96,14 @@ public class HotUpdate : MonoBehaviour
             string localResFile = Config.ResPath + "res.zip";
             text.text += "\nlocalResFile: " + localResFile;
             File.WriteAllBytes(localResFile, wwwRes.bytes);
+            text.text += "\nlocalResFile: " + localResFile;
 
             UtilZip.UnZip(localResFile, Config.ResPath);
+            text.text += "\nlocalResFile: " + localResFile;
             File.Delete(localResFile);
-
+            text.text += "\nlocalResFile: " + localResFile;
             SetLocalResVersion(verLocal);
-
+            text.text += "\nlocalResFile: " + localResFile;
             StartCoroutine(DoResUpdate(verLocal, verServer));
         }
     }

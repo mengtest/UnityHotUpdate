@@ -7,7 +7,7 @@ public class Test : MonoBehaviour
     void Start()
     {
         Debug.Log("Config.platform: " + Config.platform);
-        GameObject go = ResMgr.Inst.CreateGO("Cube1");
+        GameObject go = ResMgr.Inst.CreateGO("Cube");
         go.transform.position = new Vector3(0, 0, 0);
     }
 }
