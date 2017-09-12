@@ -23,6 +23,7 @@ public class ResMgr : Singleton<ResMgr>
         T obj = null;
 
         string assetFile = Config.ResPath + path.ToLower();
+        Debug.Log("assetFile: " + assetFile);
         if (!File.Exists(assetFile))
         {
             obj = Resources.Load<T>(path);

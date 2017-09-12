@@ -13,7 +13,6 @@ public class HotUpdate : MonoBehaviour
     private int _taskUpdateNum = 0;
 
     public Text text;
-    public Text luaText;
 
 
     void Awake()
@@ -29,8 +28,6 @@ public class HotUpdate : MonoBehaviour
         text.text += "\n当前资源版本：" + GetLocalResVersion();
         text.text += "\nConfig.ApiVersion：" + Config.ApiVersion;
         text.text += "\nConfig.ResPath：" + Config.ResPath;
-
-        luaText.text = UtilLua.FileContent("Main");
 
         if (!Directory.Exists(Config.ResPath)) Directory.CreateDirectory(Config.ResPath);
     }

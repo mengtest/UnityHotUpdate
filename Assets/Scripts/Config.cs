@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class VersionInfo
 {
-    public int ver_android_res = 5;
+    public int ver_android_res = 2;
     public int ver_ios_res = 1;
     public int ver_win_res = 1;
 }
