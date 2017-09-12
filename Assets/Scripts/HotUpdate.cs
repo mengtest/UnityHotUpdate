@@ -25,7 +25,7 @@ public class HotUpdate : MonoBehaviour
         _taskUpdateNum = Config.TaskUpdateNum;
 
         text.text = "当前平台：" + Config.platform;
-        text.text = "\n当前版本：" + GetLocalResVersion();
+        text.text += "\n当前版本：" + GetLocalResVersion();
         text.text += "\nConfig.ApiVersion：" + Config.ApiVersion;
         text.text += "\nConfig.ResPath：" + Config.ResPath;
         if (!Directory.Exists(Config.ResPath)) Directory.CreateDirectory(Config.ResPath);
@@ -57,8 +57,6 @@ public class HotUpdate : MonoBehaviour
         yield return www;
         if (!string.IsNullOrEmpty(www.error))
         {
-            text.text += "\nrequest version error：" + www.error;
-            Debug.Log("Config.ApiVersion: " + Config.ApiVersion);
             Debug.LogError("request version error: " + www.error);
             yield break;
         }
@@ -67,14 +65,12 @@ public class HotUpdate : MonoBehaviour
 
         int verResLocal = GetLocalResVersion();
         int verResServer = GetServerResVersion(versionInfo);
-        text.text += "\nverResLocal: " + verResLocal + " verResServer: " + verResServer;
         Debug.Log("verResLocal: " + verResLocal + " verResServer: " + verResServer);
         StartCoroutine(DoResUpdate(verResLocal, verResServer));
     }
 
     IEnumerator DoResUpdate(int verLocal, int verServer)
     {
-        text.text += "\nverResLocal: " + verLocal + " verResServer: " + verServer + " _taskUpdateNum: " + _taskUpdateNum;
         if (verLocal >= verServer)
         {
             _taskUpdateNum--;
@@ -83,24 +79,20 @@ public class HotUpdate : MonoBehaviour
         {
             verLocal++;
             string resFile = Config.ApiUrl + Config.platform + "/res/r" + verLocal + ".zip";
-            text.text += "\nresFile: " + resFile;
 
             WWW wwwRes = new WWW(resFile);
             yield return wwwRes;
             if (!string.IsNullOrEmpty(wwwRes.error))
             {
-                text.text += "\nrequest " + resFile + " error: " + wwwRes.error;
                 Debug.LogError("request " + resFile + " error: " + wwwRes.error);
                 yield break;
             }
 
             string localResFile = Config.ResPath + "res.zip";
-            text.text += "\nlocalResFile: " + localResFile;
             File.WriteAllBytes(localResFile, wwwRes.bytes);
-            text.text += "\nlocalResFile: " + localResFile;
 
             UtilZip.UnZip(localResFile, Config.ResPath);
-            text.text += "\nlocalResFile: " + localResFile;
+            
             File.Delete(localResFile);
             SetLocalResVersion(verLocal);
             StartCoroutine(DoResUpdate(verLocal, verServer));
