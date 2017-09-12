@@ -25,6 +25,7 @@ public class HotUpdate : MonoBehaviour
         _taskUpdateNum = Config.TaskUpdateNum;
 
         text.text = "当前平台：" + Config.platform;
+        text.text = "\n当前版本：" + GetLocalResVersion();
         text.text += "\nConfig.ApiVersion：" + Config.ApiVersion;
         text.text += "\nConfig.ResPath：" + Config.ResPath;
         if (!Directory.Exists(Config.ResPath)) Directory.CreateDirectory(Config.ResPath);
@@ -101,9 +102,7 @@ public class HotUpdate : MonoBehaviour
             UtilZip.UnZip(localResFile, Config.ResPath);
             text.text += "\nlocalResFile: " + localResFile;
             File.Delete(localResFile);
-            text.text += "\nlocalResFile: " + localResFile;
             SetLocalResVersion(verLocal);
-            text.text += "\nlocalResFile: " + localResFile;
             StartCoroutine(DoResUpdate(verLocal, verServer));
         }
     }

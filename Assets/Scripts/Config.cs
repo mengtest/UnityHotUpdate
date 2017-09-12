@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class VersionInfo
 {
-    public int ver_android_res = 5;
+    public int ver_android_res = 1;
     public int ver_android_lua = 1;
 
     public int ver_ios_res = 1;
@@ -25,24 +25,21 @@ public enum Platform
 public class Config
 {
     public static string ApiUrl = "http://192.168.0.102:81/";
+    public static string ApiVersion = ApiUrl + "version";
 
 #if UNITY_ANDROID
     public static Platform platform = Platform.Android;
-    public static string ResPath = "jar:file://" + Application.persistentDataPath + "/AssetBundle/";
-    
 #elif UNITY_IOS
     public static Platform platform = Platform.iOS;
-    public static string ResPath = Application.persistentDataPath + "/AssetBundle/";
 #else
     public static Platform platform = Platform.Win;
-    public static string ResPath = Application.persistentDataPath + "/AssetBundle/";
 #endif
 
+    public static string ResPath = Application.persistentDataPath + "/AssetBundle/";
     public static string AssetBundleFile = ResPath + "AssetBundle";
 
-    public static string ApiVersion = ApiUrl + "version";
+    public static string VerKeyRes = "ver_res";
 
     //更新任务数量, 暂时AssetBundle, 后面会增加lua
     public static int TaskUpdateNum = 1;
-    public static string VerKeyRes = "ver_res";
 }
