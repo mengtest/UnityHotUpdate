@@ -5,14 +5,9 @@ using UnityEngine;
 
 public class VersionInfo
 {
-    public int ver_android_res = 1;
-    public int ver_android_lua = 1;
-
+    public int ver_android_res = 5;
     public int ver_ios_res = 1;
-    public int ver_ios_lua = 1;
-
     public int ver_win_res = 1;
-    public int ver_win_lua = 1;
 }
 
 public enum Platform
@@ -40,6 +35,6 @@ public class Config
 
     public static string VerKeyRes = "ver_res";
 
-    //更新任务数量, 暂时AssetBundle, 后面会增加lua
+    //更新任务数量AssetBundle
     public static int TaskUpdateNum = 1;
 }

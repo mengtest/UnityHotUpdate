@@ -8,22 +8,25 @@ using UnityEditor;
 
 public class BuildHot
 {
-    private static string _pathHotRoot = Application.dataPath + "/../hotroot/";
-    private static string _pathWwwRoot = Application.dataPath + "/../wwwroot/";
+    private static string _pathHotRoot = Path.GetFullPath(Application.dataPath + "/../hotroot/");
+    private static string _pathWwwRoot = Path.GetFullPath(Application.dataPath + "/../wwwroot/");
     private static string _verInfoFile = _pathWwwRoot + "version";
 
     private static readonly VersionInfo _versionInfo = new VersionInfo();
 
     private static string _platform;
-    private static int _ver;
+    private static int _verRes;
     private static string _pathPlatVerAB;
+
+    private static int _verLua;
+    private static string _luaPath;
 
 
     [MenuItem("Game/AssetBundle/Build(Android)")]
     private static void BuildAssetBundlesAndroid()
     {
         _platform = "Android";
-        _ver = _versionInfo.ver_android_res;
+        _verRes = _versionInfo.ver_android_res;
         BuildAssetBundles(BuildTarget.Android);
     }
 
@@ -31,7 +34,7 @@ public class BuildHot
     private static void BuildAssetBundlesIos()
     {
         _platform = "iOS";
-        _ver = _versionInfo.ver_ios_res;
+        _verRes = _versionInfo.ver_ios_res;
         BuildAssetBundles(BuildTarget.iOS);
     }
 
@@ -39,7 +42,7 @@ public class BuildHot
     private static void BuildAssetBundlesWin()
     {
         _platform = "Win";
-        _ver = _versionInfo.ver_win_res;
+        _verRes = _versionInfo.ver_win_res;
         BuildAssetBundles(BuildTarget.StandaloneWindows);
     }
 
@@ -47,7 +50,7 @@ public class BuildHot
     private static void UpdateAssetBundlesAndroid()
     {
         _platform = "Android";
-        _ver = _versionInfo.ver_android_res;
+        _verRes = _versionInfo.ver_android_res;
         UpdateAssetBundles();
     }
 
@@ -55,7 +58,7 @@ public class BuildHot
     private static void UpdateAssetBundlesIos()
     {
         _platform = "iOS";
-        _ver = _versionInfo.ver_ios_res;
+        _verRes = _versionInfo.ver_ios_res;
         UpdateAssetBundles();
     }
 
@@ -63,14 +66,14 @@ public class BuildHot
     private static void UpdateAssetBundlesWin()
     {
         _platform = "Win";
-        _ver = _versionInfo.ver_win_res;
+        _verRes = _versionInfo.ver_win_res;
         UpdateAssetBundles();
     }
 
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _ver + "/";
+        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
         CreatePath(_pathPlatVerAB);
 
         ClearAssetBundleNames();
@@ -81,7 +84,7 @@ public class BuildHot
 
     private static void UpdateAssetBundles()
     {
-        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _ver + "/";
+        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
         CreatePath(_pathWwwRoot);
 
         ZipRes();
@@ -146,17 +149,17 @@ public class BuildHot
 
     private static void ZipRes()
     {
-        if (_ver <= 1) { return; }
+        if (_verRes <= 1) { return; }
 
-        int verLast = _ver - 1;
+        int verLast = _verRes - 1;
         string pathPlatVerABLast = _pathHotRoot + _platform + "/res/v" + verLast + "/";
         string zipPath = _pathWwwRoot + _platform + "/res/";
-        string zipFile = zipPath + "r" + _ver + ".zip";
+        string zipFile = zipPath + _verRes + ".zip";
 
         List<string> listResInfoDiff = GetFileInfoDiff(_pathPlatVerAB + "resourcesinfo", pathPlatVerABLast + "resourcesinfo");
 
         Dictionary<string, string> dictZipFile = new Dictionary<string, string>();
-        dictZipFile.Add(_pathPlatVerAB + "v" + _ver, "AssetBundle");
+        dictZipFile.Add(_pathPlatVerAB + "v" + _verRes, "AssetBundle");
         foreach (string diffFile in listResInfoDiff)
         {
             string diffFile2 = _pathPlatVerAB + diffFile;

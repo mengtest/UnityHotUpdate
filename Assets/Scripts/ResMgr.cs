@@ -13,7 +13,7 @@ public class ResMgr : Singleton<ResMgr>
     }
 
     
-    public T Load<T>(string path, bool cache) where T : UnityEngine.Object
+    public T Load<T>(string path, bool cache = false) where T : UnityEngine.Object
     {
         if (_resHash.Contains(path))
         {

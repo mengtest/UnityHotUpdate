@@ -13,6 +13,7 @@ public class HotUpdate : MonoBehaviour
     private int _taskUpdateNum = 0;
 
     public Text text;
+    public Text luaText;
 
 
     void Awake()
@@ -25,9 +26,12 @@ public class HotUpdate : MonoBehaviour
         _taskUpdateNum = Config.TaskUpdateNum;
 
         text.text = "当前平台：" + Config.platform;
-        text.text += "\n当前版本：" + GetLocalResVersion();
+        text.text += "\n当前资源版本：" + GetLocalResVersion();
         text.text += "\nConfig.ApiVersion：" + Config.ApiVersion;
         text.text += "\nConfig.ResPath：" + Config.ResPath;
+
+        luaText.text = UtilLua.FileContent("Main");
+
         if (!Directory.Exists(Config.ResPath)) Directory.CreateDirectory(Config.ResPath);
     }
 
@@ -46,12 +50,12 @@ public class HotUpdate : MonoBehaviour
 #if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
         SceneManager.LoadScene("Main");
 #else
-        StartCoroutine(DoResUpdate());
+        StartCoroutine(DoUpdate());
 #endif
     }
 
 
-    IEnumerator DoResUpdate()
+    IEnumerator DoUpdate()
     {
         WWW www = new WWW(Config.ApiVersion);
         yield return www;
@@ -66,19 +70,20 @@ public class HotUpdate : MonoBehaviour
         int verResLocal = GetLocalResVersion();
         int verResServer = GetServerResVersion(versionInfo);
         Debug.Log("verResLocal: " + verResLocal + " verResServer: " + verResServer);
+
         StartCoroutine(DoResUpdate(verResLocal, verResServer));
     }
 
-    IEnumerator DoResUpdate(int verLocal, int verServer)
+    IEnumerator DoResUpdate(int verResLocal, int verResServer)
     {
-        if (verLocal >= verServer)
+        if (verResLocal >= verResServer)
         {
             _taskUpdateNum--;
         }
         else
         {
-            verLocal++;
-            string resFile = Config.ApiUrl + Config.platform + "/res/r" + verLocal + ".zip";
+            verResLocal++;
+            string resFile = Config.ApiUrl + Config.platform + "/res/" + verResLocal + ".zip";
 
             WWW wwwRes = new WWW(resFile);
             yield return wwwRes;
@@ -94,8 +99,8 @@ public class HotUpdate : MonoBehaviour
             UtilZip.UnZip(localResFile, Config.ResPath);
             
             File.Delete(localResFile);
-            SetLocalResVersion(verLocal);
-            StartCoroutine(DoResUpdate(verLocal, verServer));
+            SetLocalResVersion(verResLocal);
+            StartCoroutine(DoResUpdate(verResLocal, verResServer));
         }
     }
 
