@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine;
 using ICSharpCode.SharpZipLib.Zip;
 
 
@@ -47,12 +50,62 @@ public class UtilZip
     }
 
     /// <summary>
+    /// 解压文件(这个不好用, 在Android下有目录的情况下不能覆盖)
+    /// </summary>
+    /// <param name="zipFile">压缩文件</param>
+    /// <param name="outPath">解压目录</param>
+    public static void UnZip2(string zipFile, string outPath)
+    {
+        (new FastZip()).ExtractZip(zipFile, outPath, "");
+    }
+
+    /// <summary>
     /// 解压文件
     /// </summary>
     /// <param name="zipFile">压缩文件</param>
     /// <param name="outPath">解压目录</param>
-    public static void UnZip(string zipFile, string outPath)
+    public static void UnZip(string sourceFile, string targetPath)
     {
-        (new FastZip()).ExtractZip(zipFile, outPath, "");
+        if (!File.Exists(sourceFile))
+        {
+            Debug.LogError("sourceFile: " + sourceFile + " not exist");
+            return;
+        }
+        UtilIO.CreateDir(targetPath);
+
+        using (var s = new ZipInputStream(File.OpenRead(sourceFile)))
+        {
+            ZipEntry theEntry;
+            while ((theEntry = s.GetNextEntry()) != null)
+            {
+                if (theEntry.IsDirectory) continue;
+
+                string directorName = Path.Combine(targetPath, Path.GetDirectoryName(theEntry.Name));
+                string fileName = Path.Combine(directorName, Path.GetFileName(theEntry.Name));
+
+                UtilIO.CreateDir(directorName);
+
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    using (FileStream streamWriter = File.Create(fileName))
+                    {
+                        int size = 4096;
+                        byte[] data = new byte[size];
+                        while (true)
+                        {
+                            size = s.Read(data, 0, data.Length);
+                            if (size > 0)
+                            {
+                                streamWriter.Write(data, 0, size);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

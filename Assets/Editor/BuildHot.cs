@@ -18,9 +18,6 @@ public class BuildHot
     private static int _verRes;
     private static string _pathPlatVerAB;
 
-    private static int _verLua;
-    private static string _luaPath;
-
 
     [MenuItem("Game/AssetBundle/Build(Android)")]
     private static void BuildAssetBundlesAndroid()
@@ -74,7 +71,7 @@ public class BuildHot
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
         _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
-        CreatePath(_pathPlatVerAB);
+        UtilIO.CreateDir(_pathPlatVerAB);
 
         ClearAssetBundleNames();
         SetAssetBundleName();
@@ -85,17 +82,12 @@ public class BuildHot
     private static void UpdateAssetBundles()
     {
         _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
-        CreatePath(_pathWwwRoot);
+        UtilIO.CreateDir(_pathWwwRoot);
 
         ZipRes();
         WriteVerInfo();
     }
 
-
-    private static void CreatePath(string path)
-    {
-        if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
-    }
 
     private static void SetAssetBundleName()
     {
@@ -166,10 +158,7 @@ public class BuildHot
             dictZipFile.Add(diffFile2, diffFile);
         }
 
-        if (!Directory.Exists(zipPath))
-        {
-            Directory.CreateDirectory(zipPath);
-        }
+        UtilIO.CreateDir(zipPath);
         UtilZip.Zip(dictZipFile, zipFile);
     }
 
