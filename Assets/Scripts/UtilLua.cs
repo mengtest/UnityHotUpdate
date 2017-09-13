@@ -15,7 +15,7 @@ public class UtilLua
         {
             fileName += ".lua";
         }
-        TextAsset textAsset = ResMgr.Inst.Load<TextAsset>("lua/" + fileName);
+        TextAsset textAsset = ResMgr.Inst.Load<TextAsset>("Lua/" + fileName);
         if (textAsset != null)
         {
             return textAsset.text;

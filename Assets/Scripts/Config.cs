@@ -22,6 +22,8 @@ public class Config
     public static string ApiUrl = "http://192.168.0.102:81/";
     public static string ApiVersion = ApiUrl + "version";
 
+    public static string BundleExtension = ".unity";
+
 #if UNITY_ANDROID
     public static Platform platform = Platform.Android;
 #elif UNITY_IOS

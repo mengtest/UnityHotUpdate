@@ -22,9 +22,9 @@ public class UtilZip
 
             foreach (var kv in inFiles)
             {
+                //Debug.Log("fileName: " + kv.Key + " entryName: " + kv.Value);
                 zip.Add(kv.Key, kv.Value);
             }
-
             zip.CommitUpdate();
         }
     }

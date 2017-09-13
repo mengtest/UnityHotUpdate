@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class UtilIO
 {
-    public static void CopyDir(string dirFrom, string dirTo)
+    public static void CopyDir(string dirFrom, string dirTo, string ext = "")
     { 
         if (!Directory.Exists(dirFrom))
         {
@@ -21,14 +21,14 @@ public class UtilIO
         {
             string fileFrom = Path.GetFileName(fileFromName);
             string fileTo = Path.Combine(dirTo, fileFrom);
-            File.Copy(fileFromName, fileTo, true);
+            File.Copy(fileFromName, fileTo + ext, true);
         }
 
         foreach (string dirFromName in Directory.GetDirectories(dirFrom))
         {
             string dirFrom2 = Path.GetFileName(dirFromName);
             string dirTo2 = Path.Combine(dirTo, dirFrom2);
-            CopyDir(dirFromName, dirTo2);
+            CopyDir(dirFromName, dirTo2, ext);
         }
     }
 

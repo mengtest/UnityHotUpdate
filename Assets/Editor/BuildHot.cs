@@ -16,7 +16,10 @@ public class BuildHot
 
     private static string _platform;
     private static int _verRes;
-    private static string _pathPlatVerAB;
+    private static string _pathPlatVer;
+
+    private static string _luaPath = Path.GetFullPath(Application.dataPath + "/../Lua/");
+    private static string _luaPathResources = Application.dataPath + "/Resources/Lua/";
 
 
     [MenuItem("Game/AssetBundle/Build(Android)")]
@@ -70,18 +73,20 @@ public class BuildHot
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
-        UtilIO.CreateDir(_pathPlatVerAB);
+        _pathPlatVer = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
+        UtilIO.CreateDir(_pathPlatVer);
 
+        CopyLua();
+        AssetDatabase.Refresh();
         ClearAssetBundleNames();
         SetAssetBundleName();
-        AssetBundleManifest mainfest = BuildPipeline.BuildAssetBundles(_pathPlatVerAB, BuildAssetBundleOptions.UncompressedAssetBundle, buildTarget);
+        AssetBundleManifest mainfest = BuildPipeline.BuildAssetBundles(_pathPlatVer, BuildAssetBundleOptions.UncompressedAssetBundle, buildTarget);
         BuildAssetBundleAfter(mainfest);
     }
 
     private static void UpdateAssetBundles()
     {
-        _pathPlatVerAB = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
+        _pathPlatVer = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
         UtilIO.CreateDir(_pathWwwRoot);
 
         ZipRes();
@@ -111,7 +116,7 @@ public class BuildHot
                 //Debug.Log("assetBundleName: " + assetBundleName);
 
                 AssetImporter importer = AssetImporter.GetAtPath(basePath);
-                importer.assetBundleName = assetBundleName;
+                importer.assetBundleName = assetBundleName + Config.BundleExtension;
             }
         }
         else
@@ -122,7 +127,7 @@ public class BuildHot
 
     private static void BuildAssetBundleAfter(AssetBundleManifest mainfest)
     {
-        string fileResInfo = _pathPlatVerAB + "resourcesinfo";
+        string fileResInfo = _pathPlatVer + "resourcesinfo";
 
         using (FileStream fs = new FileStream(fileResInfo, FileMode.Create))
         {
@@ -144,17 +149,17 @@ public class BuildHot
         if (_verRes <= 1) { return; }
 
         int verLast = _verRes - 1;
-        string pathPlatVerABLast = _pathHotRoot + _platform + "/res/v" + verLast + "/";
+        string pathPlatVerLast = _pathHotRoot + _platform + "/res/v" + verLast + "/";
         string zipPath = _pathWwwRoot + _platform + "/res/";
         string zipFile = zipPath + _verRes + ".zip";
 
-        List<string> listResInfoDiff = GetFileInfoDiff(_pathPlatVerAB + "resourcesinfo", pathPlatVerABLast + "resourcesinfo");
+        List<string> listResInfoDiff = GetFileInfoDiff(_pathPlatVer + "resourcesinfo", pathPlatVerLast + "resourcesinfo");
 
         Dictionary<string, string> dictZipFile = new Dictionary<string, string>();
-        dictZipFile.Add(_pathPlatVerAB + "v" + _verRes, "AssetBundle");
+        dictZipFile.Add(_pathPlatVer + "v" + _verRes, "AssetBundle");
         foreach (string diffFile in listResInfoDiff)
         {
-            string diffFile2 = _pathPlatVerAB + diffFile;
+            string diffFile2 = _pathPlatVer + diffFile;
             dictZipFile.Add(diffFile2, diffFile);
         }
 
@@ -203,6 +208,11 @@ public class BuildHot
     {
         string verInfoStr = JsonUtility.ToJson(_versionInfo);
         File.WriteAllBytes(_verInfoFile, System.Text.Encoding.Default.GetBytes(verInfoStr));
+    }
+
+    private static void CopyLua()
+    {
+        UtilIO.CopyDir(_luaPath, _luaPathResources, ".txt");
     }
 
     private static void ClearAssetBundleNames()

@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 
 public class AssetMgr : Singleton<AssetMgr>
 {
-    //private string _bundleExtension = ".unity";
     private string _manifestName = "AssetBundleManifest";
     private string _bundleDirPath = Config.ResPath;
     AssetBundleManifest _bundleManifest = null;
@@ -35,12 +34,12 @@ public class AssetMgr : Singleton<AssetMgr>
     public AssetBundle LoadBundle(string bundleName)
     {
     	bundleName = bundleName.ToLower();
-        /*
-    	if (!bundleName.EndsWith(bundleExtension))
+
+        if (!bundleName.EndsWith(Config.BundleExtension))
     	{
-    		bundleName += bundleExtension;
+            bundleName += Config.BundleExtension;
     	}
-         * */
+        
     	LoadDependencies(bundleName);
 
     	AssetBundle bundle;
