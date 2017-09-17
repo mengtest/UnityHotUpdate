@@ -8,72 +8,67 @@ using UnityEditor;
 
 public class BuildHot
 {
-    private static string _pathHotRoot = Path.GetFullPath(Application.dataPath + "/../hotroot/");
-    private static string _pathWwwRoot = Path.GetFullPath(Application.dataPath + "/../wwwroot/");
-    private static string _verInfoFile = _pathWwwRoot + "version";
+    private static string _verInfoFile = Config.WwwRootPath + "version";
 
     private static readonly VersionInfo _versionInfo = new VersionInfo();
 
-    private static string _platform;
+    private static Platform _platform;
     private static int _verRes;
     private static string _pathPlatVer;
-
-    private static string _luaPath = Path.GetFullPath(Application.dataPath + "/../Lua/");
-    private static string _luaPathResources = Application.dataPath + "/Resources/Lua/";
 
 
     [MenuItem("Game/AssetBundle/Build(Android)")]
     private static void BuildAssetBundlesAndroid()
     {
-        _platform = "Android";
-        _verRes = _versionInfo.ver_android_res;
+        _platform = Platform.Android;
+        _verRes = _versionInfo.ver_res_android;
         BuildAssetBundles(BuildTarget.Android);
     }
 
     [MenuItem("Game/AssetBundle/Build(iOS)")]
     private static void BuildAssetBundlesIos()
     {
-        _platform = "iOS";
-        _verRes = _versionInfo.ver_ios_res;
+        _platform = Platform.iOS;
+        _verRes = _versionInfo.ver_res_ios;
         BuildAssetBundles(BuildTarget.iOS);
     }
 
     [MenuItem("Game/AssetBundle/Build(Win)")]
     private static void BuildAssetBundlesWin()
     {
-        _platform = "Win";
-        _verRes = _versionInfo.ver_win_res;
+        _platform = Platform.Win;
+        _verRes = _versionInfo.ver_res_win;
         BuildAssetBundles(BuildTarget.StandaloneWindows);
     }
 
     [MenuItem("Game/AssetBundle/Update(Android)")]
     private static void UpdateAssetBundlesAndroid()
     {
-        _platform = "Android";
-        _verRes = _versionInfo.ver_android_res;
+        _platform = Platform.Android;
+        _verRes = _versionInfo.ver_res_android;
         UpdateAssetBundles();
     }
 
     [MenuItem("Game/AssetBundle/Update(iOS)")]
     private static void UpdateAssetBundlesIos()
     {
-        _platform = "iOS";
-        _verRes = _versionInfo.ver_ios_res;
+        _platform = Platform.iOS;
+        _verRes = _versionInfo.ver_res_ios;
         UpdateAssetBundles();
     }
 
     [MenuItem("Game/AssetBundle/Update(Win)")]
     private static void UpdateAssetBundlesWin()
     {
-        _platform = "Win";
-        _verRes = _versionInfo.ver_win_res;
+        _platform = Platform.Win;
+        _verRes = _versionInfo.ver_res_win;
         UpdateAssetBundles();
     }
 
 
     private static void BuildAssetBundles(BuildTarget buildTarget)
     {
-        _pathPlatVer = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
+        _pathPlatVer = VerPath(_verRes);
         UtilIO.CreateDir(_pathPlatVer);
 
         CopyLua();
@@ -86,8 +81,8 @@ public class BuildHot
 
     private static void UpdateAssetBundles()
     {
-        _pathPlatVer = _pathHotRoot + _platform + "/res/v" + _verRes + "/";
-        UtilIO.CreateDir(_pathWwwRoot);
+        _pathPlatVer = VerPath(_verRes);
+        UtilIO.CreateDir(Config.WwwRootPath);
 
         ZipRes();
         WriteVerInfo();
@@ -148,9 +143,8 @@ public class BuildHot
     {
         if (_verRes <= 1) { return; }
 
-        int verLast = _verRes - 1;
-        string pathPlatVerLast = _pathHotRoot + _platform + "/res/v" + verLast + "/";
-        string zipPath = _pathWwwRoot + _platform + "/res/";
+        string pathPlatVerLast = VerPath(_verRes - 1);
+        string zipPath = Config.WwwRootPath + "res/" + _platform + "/";
         string zipFile = zipPath + _verRes + ".zip";
 
         List<string> listResInfoDiff = GetFileInfoDiff(_pathPlatVer + "resourcesinfo", pathPlatVerLast + "resourcesinfo");
@@ -212,7 +206,7 @@ public class BuildHot
 
     private static void CopyLua()
     {
-        UtilIO.CopyDir(_luaPath, _luaPathResources, ".txt");
+        UtilIO.CopyDir(Config.LuaPath, Config.LuaPathRes, ".txt");
     }
 
     private static void ClearAssetBundleNames()
@@ -221,5 +215,10 @@ public class BuildHot
         {
             AssetDatabase.RemoveAssetBundleName(bundleName, true);
         }
+    }
+
+    private static string VerPath(int ver)
+    {
+        return Config.HotRootPath + "res/" + _platform + "/v" + ver + "/";
     }
 }

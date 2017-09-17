@@ -1,6 +1,10 @@
-AssetBundle：
+Game/AssetBundle/Build(Android)
 	打包对应平台的AssetBundle
+Game/AssetBundle/Update(Android)
 	查找与上一个版本有差异的文件并打包成zip放到web目录(当前版本AssetBundle文件必须打包)
 	写入版本信息存到web目录
-	发布当前版本的包
-	增加版本号
+
+发布当前版本的包
+
+增加版本号
+	把Config.cs VersionInfo类的ver_res_android版本号增加

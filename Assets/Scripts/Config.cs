@@ -1,13 +1,14 @@
-﻿using System.Collections;
+﻿using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
 public class VersionInfo
 {
-    public int ver_android_res = 1;
-    public int ver_ios_res = 1;
-    public int ver_win_res = 1;
+    public int ver_res_android = 1;
+    public int ver_res_ios = 1;
+    public int ver_res_win = 1;
 }
 
 public enum Platform
@@ -32,8 +33,14 @@ public class Config
     public static Platform platform = Platform.Win;
 #endif
 
+    public static string HotRootPath = Path.GetFullPath(Application.dataPath + "/../hotroot/");
+    public static string WwwRootPath = Path.GetFullPath(Application.dataPath + "/../wwwroot/");
+
     public static string ResPath = Application.persistentDataPath + "/AssetBundle/";
     public static string AssetBundleFile = ResPath + "AssetBundle";
+
+    public static string LuaPath = Path.GetFullPath(Application.dataPath + "/../Lua/");
+    public static string LuaPathRes = Application.dataPath + "/Resources/Lua/";
 
     public static string VerKeyRes = "ver_res";
 

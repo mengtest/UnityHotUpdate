@@ -44,7 +44,7 @@ public class HotUpdate : MonoBehaviour
     public void OnButtonClick()
     {
         Debug.Log("点击了按钮");
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_MAC || UNITY_EDITOR
+#if UNITY_EDITOR
         SceneManager.LoadScene("Main");
 #else
         StartCoroutine(DoUpdate());
@@ -80,7 +80,7 @@ public class HotUpdate : MonoBehaviour
         else
         {
             verResLocal++;
-            string resFile = Config.ApiUrl + Config.platform + "/res/" + verResLocal + ".zip";
+            string resFile = Config.ApiUrl + "res/" + Config.platform + "/" + verResLocal + ".zip";
 
             WWW wwwRes = new WWW(resFile);
             yield return wwwRes;
@@ -105,15 +105,15 @@ public class HotUpdate : MonoBehaviour
     {
         if (Config.platform == Platform.Android)
         {
-            return versionInfo.ver_android_res;
+            return versionInfo.ver_res_android;
         }
         else if (Config.platform == Platform.iOS)
         {
-            return versionInfo.ver_ios_res;
+            return versionInfo.ver_res_ios;
         }
         else
         {
-            return versionInfo.ver_win_res;
+            return versionInfo.ver_res_win;
         }
     }
 
@@ -121,15 +121,15 @@ public class HotUpdate : MonoBehaviour
     {
         if (Config.platform == Platform.Android)
         {
-            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_android_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_res_android);
         }
         else if (Config.platform == Platform.iOS)
         {
-            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_ios_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_res_ios);
         }
         else
         {
-            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_win_res);
+            return PlayerPrefs.GetInt(Config.VerKeyRes, _verInfo.ver_res_win);
         }
     }
 
