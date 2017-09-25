@@ -4,6 +4,7 @@ Unity3D 热更新
 
 前提：    
 	所有要更新的资源和文件都存放在Resources目录下   
+	lua文件存放在与Assets同级的Lua目录下，打包时复制到Resources/Lua目录下    
 	加载资源时，先检查热更目录是否有资源，有就加载热更新目录下的，没有就加载打包的Resources目录
 
 资源发布流程(Android)：    
